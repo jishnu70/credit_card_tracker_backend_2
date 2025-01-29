@@ -1,9 +1,9 @@
-from ninja import Schema, Field
-from pydantic import constr
+from ninja import Schema
+from typing import List
+from pydantic import Field
 # from datatime import date
 
 class UserLoginRegister_Schema(Schema):
-    # loginMethod: int
     username: str
     email: str = None
     first_name: str = None
@@ -17,5 +17,19 @@ class Message(Schema):
 
 class CardInformation(Schema):
     cardHolderName: str
-    cardNo: str
-    cardExpDate: str
+    cardNo: constr(min_length=16, max_length=16, regex=r'^\d{16}$')  # Ensures it's exactly 16 digits
+    cardExpDate: constr(regex=r'^(0[1-9]|1[0-2])\/\d{4}$')  # Matches MM/YYYY format
+    
+# Transaction item schema
+class TransactionItemSchema(Schema):
+    item_id: int
+    quantity: int
+    price_per_unit: int
+
+# Transaction schema
+class TransactionSchema(Schema):
+    id: int
+    user_id: int
+    items: List[TransactionItemSchema]
+    total_amount: int
+    timestamp: str  # ISO format timestamp
