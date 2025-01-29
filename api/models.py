@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from cryptography.fernet import Fernet
 import re
 import os
+import json
 
 # Encryption key (generate a secure key and store it securely)
 ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY", Fernet.generate_key())
