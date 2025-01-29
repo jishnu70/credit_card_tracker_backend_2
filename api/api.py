@@ -94,3 +94,23 @@ def retrieve_transactions(request):
 
     except Exception as e:
         return 400, {"message": f"Error occurred: {str(e)}"}
+
+# Retrieve all cards for the authenticated user
+@router.get("get-cards/", response={200: list[CardInformation], 401: Message}, auth=JWTAuth())
+def get_all_cards(request):
+    user = request.user
+    user_cards = UserCard.objects.filter(user=user)
+
+    if not user_cards.exists():
+        return 401, {"message": "No cards found"}
+
+    decrypted_cards = [
+        {
+            "cardHolderName": card.card.get_decrypted_data()["cardHolderName"],
+            "cardNo": card.card.get_decrypted_data()["cardNo"],
+            "cardExpDate": card.card.get_decrypted_data()["cardExpDate"]
+        }
+        for card in user_cards
+    ]
+
+    return 200, decrypted_cards
