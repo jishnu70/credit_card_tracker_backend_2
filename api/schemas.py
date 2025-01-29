@@ -1,6 +1,6 @@
 from ninja import Schema
 from typing import List
-from pydantic import Field
+from pydantic import Field, constr
 # from datatime import date
 
 class UserLoginRegister_Schema(Schema):
@@ -17,8 +17,8 @@ class Message(Schema):
 
 class CardInformation(Schema):
     cardHolderName: str
-    cardNo: constr(min_length=16, max_length=16, regex=r'^\d{16}$')  # Ensures it's exactly 16 digits
-    cardExpDate: constr(regex=r'^(0[1-9]|1[0-2])\/\d{4}$')  # Matches MM/YYYY format
+    cardNo: constr(strict=True, min_length=16, max_length=16)  # Length restriction only
+    cardExpDate: str  # Matches MM/YYYY format
     
 # Transaction item schema
 class TransactionItemSchema(Schema):

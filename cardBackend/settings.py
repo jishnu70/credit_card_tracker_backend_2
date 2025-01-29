@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     "ninja",
     "corsheaders",
 
+    "api",
+
 ]
 
 MIDDLEWARE = [
