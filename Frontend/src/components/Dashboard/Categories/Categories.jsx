@@ -18,7 +18,7 @@ function Category({ categories }) {
           <CategoryCard 
             icon={index} // If icons are available in `category`, replace this with `category.icon`
             action={category.action} 
-            amount={category.amount}
+            amount={category.total_amount}  // Display total transaction amount here
             key={index}
           />
         ))}

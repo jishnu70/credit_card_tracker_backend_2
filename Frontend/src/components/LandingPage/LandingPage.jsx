@@ -1,10 +1,10 @@
 import React from "react";
 import cards from "../../assets/img/credit-card.jpg";
-import { FaUserFriends, FaChartPie, FaLayerGroup ,FaShieldAlt} from "react-icons/fa";
+import { FaUserFriends, FaChartPie, FaLayerGroup, FaShieldAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen w-screen flex flex-col bg-gray-900 text-white">
@@ -14,11 +14,12 @@ const LandingPage = () => {
           <h1 className="text-6xl text-teal-400 font-bold my-10">Track Wise</h1>
           <p className="text-slate-100 mt-4 font-semibold text-lg">
             Track Wise is a secure credit card transaction tracker that stores
-            your credit cards, monitors transactions online, and provides
-            real-time visual insights while securely managing and monitoring
-            transaction data.
+            your credit cards, monitors transactions online, and provides visual insights while securely managing and monitoring transaction data.
           </p>
-          <button onClick={() => navigate("/login")} className="mt-4 font-semibold rounded-md border border-gray-300 px-6 py-2 text-white hover:bg-slate-700 hover:shadow-md transition duration-300">
+          <button
+            onClick={() => navigate("/login")}
+            className="mt-4 font-semibold rounded-md border border-gray-300 px-6 py-2 text-white hover:bg-slate-700 hover:shadow-md transition duration-300 underline underline-offset-4 decoration-teal-400 hover:no-underline"
+          >
             Get Started
           </button>
         </div>
@@ -26,7 +27,7 @@ const LandingPage = () => {
           <img
             src={cards}
             alt="Credit Card"
-            className="w-auto h-auto rounded shadow-lg"
+            className="w-auto h-auto rounded-xl shadow-[8px_8px_15px_rgba(0,0,0,0.3)] shadow-teal-400/50"
           />
         </div>
       </div>
@@ -36,7 +37,7 @@ const LandingPage = () => {
         {/* Column 1 */}
         <div className="text-center mx-2">
           <FaUserFriends className="text-teal-400 text-4xl mx-auto mb-4" />
-          <h3 className="font-semibold text-lg ">User-friendly</h3>
+          <h3 className="font-semibold text-lg">User-friendly</h3>
           <p className="text-slate-300">
             Welcome to our user-friendly transaction tracker web application.
           </p>
@@ -47,8 +48,7 @@ const LandingPage = () => {
           <FaShieldAlt className="text-teal-400 text-4xl mx-auto mb-4" />
           <h3 className="font-semibold text-lg">Security</h3>
           <p className="text-slate-300">
-            We ensure secure and encrypted data storage for sensitive credit
-            card information.
+            We ensure secure and encrypted data storage for sensitive credit card information.
           </p>
         </div>
 
@@ -57,8 +57,7 @@ const LandingPage = () => {
           <FaChartPie className="text-teal-400 text-4xl mx-auto mb-4 pt-8 " />
           <h3 className="font-semibold text-lg">Transaction Summary</h3>
           <p className="text-slate-300">
-            We provide real-time transaction summaries and interactive
-            visualizations.
+            We provide transaction summaries and interactive visualizations.
           </p>
         </div>
 
@@ -67,8 +66,7 @@ const LandingPage = () => {
           <FaLayerGroup className="text-teal-400 text-4xl mx-auto mb-4 pt-6" />
           <h3 className="font-semibold text-lg">Scalability</h3>
           <p className="text-slate-300">
-            We provide a scalable solution suitable for personal and small
-            business use.
+            We provide a scalable solution suitable for personal and small business use.
           </p>
         </div>
       </div>

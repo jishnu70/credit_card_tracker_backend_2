@@ -1,115 +1,81 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
 from cryptography.fernet import Fernet
-import re
-import os
 import json
 
-# Encryption key (generate a secure key and store it securely)
-ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY", Fernet.generate_key())
+# Direct encryption key
+ENCRYPTION_KEY = "WOB_AN09Jm5c9HmmhKOlzWxefa2Zns1CwQaNDdxsDJk="
 cipher_suite = Fernet(ENCRYPTION_KEY)
 
+# Encryption functions
 def encrypt_data(data):
     return cipher_suite.encrypt(data.encode()).decode()
 
 def decrypt_data(encrypted_data):
-    return cipher_suite.decrypt(encrypted_data.encode()).decode()
+    try:
+        return cipher_suite.decrypt(encrypted_data.encode()).decode()
+    except:
+        return "Invalid Data"
 
-# Create your models here.
-
-class CreditCardModel(models.Model):
-    cardHolderName = models.CharField(max_length=50)
-    cardNo = models.CharField(max_length=16)
-    cardExpDate = models.CharField(max_length=7)
-
-    def clean(self):
-        super().clean()
-        # Validate the expiration date format MM/YYYY
-        if not re.match(r'^(0[1-9]|1[0-2])\/\d{4}$', self.cardExpDate):
-            raise ValidationError({'cardExpDate': 'Expiration date must be in MM/YYYY format.'})
-
-    def save(self, *args, **kwargs):
-        # Encrypt sensitive data before saving
-        self.cardHolderName = encrypt_data(self.cardHolderName)
-        self.cardNo = encrypt_data(self.cardNo)
-        self.cardExpDate = encrypt_data(self.cardExpDate)
-        super().save(*args, **kwargs)
+# Category Model
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        # Decrypt for display (only the last 4 digits of cardNo)
-        return f"Card ending with {decrypt_data(self.cardNo)[-4:]}"
+        return self.name
 
-    def get_decrypted_data(self):
+# Credit Card Model
+class CreditCard(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    card_holder = models.CharField(max_length=50)
+    card_number = models.CharField(max_length=16)
+    expiry_date = models.CharField(max_length=7)  # MM/YYYY format
+
+    def save(self, *args, **kwargs):
+        self.card_holder = encrypt_data(self.card_holder)
+        self.card_number = encrypt_data(self.card_number)
+        self.expiry_date = encrypt_data(self.expiry_date)
+        super().save(*args, **kwargs)
+
+    def get_decrypted_card(self):
         return {
-            "cardHolderName": decrypt_data(self.cardHolderName),
-            "cardNo": decrypt_data(self.cardNo),
-            "cardExpDate": decrypt_data(self.cardExpDate),
+            "card_holder": decrypt_data(self.card_holder),
+            "card_number": decrypt_data(self.card_number),
+            "expiry_date": decrypt_data(self.expiry_date),
         }
 
-class UserCard(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_cards')
-    card = models.ForeignKey(CreditCardModel, on_delete=models.CASCADE, related_name='user_cards')
-    date_added = models.DateTimeField(auto_now_add=True)  # Track when the card was added
+    def __str__(self):
+        return f"Card ending in {decrypt_data(self.card_number)[-4:]}"
+
+# Product Model
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.PositiveIntegerField()
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return f"User {self.user.username} - Card ending with {self.card.get_decrypted_data()['cardNo'][-4:]}"
+        return self.name
 
-class TransactionModel(models.Model):
+# Transaction Model
+class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    items = models.JSONField(default=list)
-    total_amount = models.IntegerField(default=0, editable=False)  # Total amount of the transaction
-    timestamp = models.DateTimeField(auto_now_add=True)  # Date and time when the transaction occurred
+    card = models.ForeignKey(CreditCard, on_delete=models.SET_NULL, null=True)
+    products = models.JSONField()  # Encrypted JSON of product details
+    total_amount = models.PositiveIntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        # Encrypt items JSON data before saving
-        self.items = encrypt_data(str(self.items))
-
-        self.total_amount = sum(
-            item.quantity * item.price_per_unit for item in self.transactionitem_set.all()
-        )
+        if isinstance(self.products, list):
+            self.products = encrypt_data(json.dumps(self.products))
+        self.total_amount = sum(item['price'] * item['quantity'] for item in self.get_decrypted_products())
         super().save(*args, **kwargs)
 
-    def get_decrypted_items(self):
-        # Decrypt items JSON data
-        return eval(decrypt_data(self.items))
+    def get_decrypted_products(self):
+        try:
+            return json.loads(decrypt_data(self.products))
+        except:
+            return []
 
     def __str__(self):
-        return f"Transaction by {self.user.username} on {self.timestamp}"
-
-class TransactionItem(models.Model):
-    transaction = models.ForeignKey(TransactionModel, on_delete=models.CASCADE)
-    item = models.ForeignKey('ItemModel', on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    price_per_unit = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.quantity} x {self.item.itemName} at {self.price_per_unit} each"
-
-# Signal to update total_amount in TransactionModel
-@receiver(post_save, sender=TransactionItem)
-@receiver(post_delete, sender=TransactionItem)
-def update_transaction_total(sender, instance, **kwargs):
-    transaction = instance.transaction
-    transaction.total_amount = sum(
-        item.quantity * item.price_per_unit for item in transaction.transactionitem_set.all()
-    )
-    transaction.save()
-
-class CategoryModel(models.Model):
-    catName = models.CharField(max_length=50)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.catName
-
-class ItemModel(models.Model):
-    itemName = models.CharField(max_length=24)
-    price = models.IntegerField()
-    itemCat = models.ForeignKey(CategoryModel, on_delete=models.CASCADE, related_name="item_category")
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.itemName
+        return f"Transaction of ₹{self.total_amount} by {self.user.username}"

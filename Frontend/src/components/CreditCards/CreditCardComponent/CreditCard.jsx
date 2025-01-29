@@ -1,10 +1,10 @@
-import React from 'react'
-import { FaWifi } from 'react-icons/fa'
-import chip from '../../../assets/img/chip.png'
-import MasterCard from '../../../assets/img/mastercard.svg'
-import americanExpress from '../../../assets/img/americanExpressLogo.png'
-import VISA from '../../../assets/img/visa-white.svg'
-import styles from './CreditCard.module.css'
+import React from 'react';
+import { FaWifi } from 'react-icons/fa';
+import chip from '../../../assets/img/chip.png';
+import MasterCard from '../../../assets/img/mastercard.svg';
+import americanExpress from '../../../assets/img/americanExpressLogo.png';
+import VISA from '../../../assets/img/visa-white.svg';
+import styles from './CreditCard.module.css';
 
 function CreditCard({ locked, data }) {
     const defaultStyle = 'linear-gradient(126deg, rgba(58, 46, 72, 1) 0%, rgba(103, 92, 121, 1) 100%)';
@@ -27,15 +27,17 @@ function CreditCard({ locked, data }) {
                     <div className={styles.cardInfo}>
                         {locked === false ? (
                             <>
-                                <h3 className={styles.cardNumber}>{data.cardNo}</h3> {/* Updated */}
-                                <span style={{ margin: "10px 0 15px 0" }}>{data.cardExpDate}</span> {/* Updated */}
-                                <label className={styles.cardName}>{data.cardHolderName}</label> {/* Updated */}
+                                <h3 className={styles.cardNumber}>{data.card_number}</h3>
+                                <span style={{ margin: "10px 0 15px 0" }}>{data.expiry_date}</span>
+                                <label className={styles.cardName}>{data.card_holder}</label>
                             </>
                         ) : (
                             <>
-                                <h3 className={styles.cardNumber}>**** **** {data.cardNo.slice(-4)}</h3> {/* Updated */}
+                                <h3 className={styles.cardNumber}>
+                                    {data.card_number ? `**** **** ${data.card_number.slice(-4)}` : '**** **** **** ****'}
+                                </h3>
                                 <span style={{ margin: "10px 0 15px 0" }}></span>
-                                <label className={styles.cardName}>{data.cardHolderName}</label> {/* Updated */}
+                                <label className={styles.cardName}>{data.card_holder}</label>
                             </>
                         )}
                     </div>

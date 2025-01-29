@@ -3,7 +3,7 @@ import Form from './Form'
 
 const Login = () => {
   return (
-    <Form route="api/token" method="Login" />
+    <Form route="api/token/obtain/" method="Login" />
   )
 }
 

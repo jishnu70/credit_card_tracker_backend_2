@@ -1,35 +1,39 @@
 from ninja import Schema
+from pydantic import BaseModel
 from typing import List
 from pydantic import Field, constr
-# from datatime import date
+from datetime import datetime
 
-class UserLoginRegister_Schema(Schema):
+class UserLoginRegisterSchema(Schema):
     username: str
     email: str = None
     first_name: str = None
     last_name: str = None
     password1: str
-    password2: str = None
-    mobileNo: str = Field(..., pattern=r'^\d{10}$')  # Mobile number should be exactly 10 digits
+    password2: str
+    mobileNo: str = Field(..., pattern=r'^\d{10}$')  # 10-digit mobile number
+
+class UserResponseSchema(Schema):
+    username: str
+    email: str = None
+    first_name: str = None
+    last_name: str = None
 
 class Message(Schema):
     message: str
 
 class CardInformation(Schema):
-    cardHolderName: str
-    cardNo: constr(strict=True, min_length=16, max_length=16)  # Length restriction only
-    cardExpDate: str  # Matches MM/YYYY format
-    
-# Transaction item schema
-class TransactionItemSchema(Schema):
-    item_id: int
-    quantity: int
-    price_per_unit: int
+    card_holder: str
+    card_number: constr(strict=True, min_length=16, max_length=16)  # Exactly 16 digits
+    expiry_date: str  # MM/YYYY format
 
-# Transaction schema
-class TransactionSchema(Schema):
+class TransactionSchema(BaseModel):
     id: int
-    user_id: int
-    items: List[TransactionItemSchema]
     total_amount: int
-    timestamp: str  # ISO format timestamp
+    timestamp: datetime  # Pydantic will convert this to a string automatically
+    items: List[dict]
+
+class CategoryTransactionAmountSchema(Schema):
+    category_name: str
+    total_amount: int
+    description: str | None
