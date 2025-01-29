@@ -16,6 +16,12 @@ export function AccountContextProvider(props) {
             const response = await api.get("/api/get-cards/");
             setCreditCards(response.data);
             localStorage.setItem('creditCards', JSON.stringify(response.data));
+
+            // Set the first card as the default current card if none is selected
+            if (!currentCreditCard && response.data.length > 0) {
+                setCurrentCreditCard(response.data[0]);
+                localStorage.setItem('currentCreditCard', JSON.stringify(response.data[0]));
+            }
         } catch (error) {
             console.error("Error fetching cards:", error.response?.data || error.message);
         }
@@ -35,6 +41,14 @@ export function AccountContextProvider(props) {
 
         if (storedCards) {
             setCreditCards(JSON.parse(storedCards));
+            // Set the first card as the default current card if none is selected
+            if (!storedCurrentCard) {
+                const cards = JSON.parse(storedCards);
+                if (cards.length > 0) {
+                    setCurrentCreditCard(cards[0]);
+                    localStorage.setItem('currentCreditCard', JSON.stringify(cards[0]));
+                }
+            }
         } else {
             fetchCreditCards(); // Fetch cards from API if not in local storage
         }
