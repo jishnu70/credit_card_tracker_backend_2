@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import NavBar from './components/NavBar/NavBar'
+// import NavBar from './components/NavBar/NavBar'
+const NavBar = React.lazy(() => import('./components/NavBar/NavBar'));
 import DashBoard from './components/DashBoard/DashBoard'
 import './App.css'
 import Profile from './components/Profile/Profile'
