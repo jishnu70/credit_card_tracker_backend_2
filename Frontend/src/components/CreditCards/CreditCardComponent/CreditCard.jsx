@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaWifi } from 'react-icons/fa';
 import chip from '../../../assets/img/chip.png';
-import MasterCard from '../../../assets/img/mastercard.svg';
+import MasterCard from "../../../assets/img/mastercard.svg";
 import americanExpress from '../../../assets/img/americanExpressLogo.png';
 import VISA from '../../../assets/img/visa-white.svg';
 import styles from './CreditCard.module.css';
