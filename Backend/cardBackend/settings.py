@@ -135,7 +135,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME-type sniffing
 
 # CORS settings (Allow only specified origins)
 CORS_ALLOWED_ORIGINS = get_env_variable("CORS_ALLOWED_ORIGINS", "").split(",")
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 
 # Append trailing slash to URLs
