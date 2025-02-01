@@ -2,10 +2,20 @@ from django.db import models
 from django.contrib.auth.models import User
 from cryptography.fernet import Fernet
 import json
+import os
+from dotenv import load_dotenv
 
-# Direct encryption key
-ENCRYPTION_KEY = "WOB_AN09Jm5c9HmmhKOlzWxefa2Zns1CwQaNDdxsDJk="
-cipher_suite = Fernet(ENCRYPTION_KEY)
+# Load environment variables
+load_dotenv()
+
+# Load Encryption Key from .env
+ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
+
+# Ensure the key is valid
+if not ENCRYPTION_KEY:
+    raise ValueError("ENCRYPTION_KEY is not set in the environment variables.")
+
+cipher_suite = Fernet(ENCRYPTION_KEY.encode())
 
 # Encryption functions
 def encrypt_data(data):
