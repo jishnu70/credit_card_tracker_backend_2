@@ -2,7 +2,7 @@ import axios from "axios";
 import { ACCESS_TOKEN } from "./constants";
 
 const api = axios.create({
-    baseURL: "https://credit-card-tracker-backend-2-1-django.onrender.com"
+    baseURL: process.env.VITE_API_URL
 })
 
 api.interceptors.request.use(
