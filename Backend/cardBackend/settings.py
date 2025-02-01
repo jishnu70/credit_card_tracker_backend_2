@@ -55,11 +55,13 @@ INSTALLED_APPS = [
     "rest_framework",
     "ninja",
     "corsheaders",
+    "gunicorn",
 
     "api",
 ]
 
 MIDDLEWARE = [
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     
     'django.middleware.security.SecurityMiddleware',
@@ -116,19 +118,23 @@ USE_TZ = True
 # Static & Media Files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
 
 # Security settings for production
-SECURE_SSL_REDIRECT = not DEBUG  # Redirect HTTP to HTTPS if not in debug mode
+SECURE_SSL_REDIRECT = not DEBUG  # Redirect HTTP to HTTPS only if not in debug mode
 SESSION_COOKIE_SECURE = not DEBUG  # Secure cookies only in production
 CSRF_COOKIE_SECURE = not DEBUG  # CSRF cookie only over HTTPS
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0  # Enable HSTS only in production
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 SECURE_BROWSER_XSS_FILTER = True  # Protect against XSS
 SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME-type sniffing
 
 # CORS settings (Allow only specified origins)
-# CORS_ALLOWED_ORIGINS = get_env_variable("CORS_ALLOWED_ORIGINS", "").split(",")
+CORS_ALLOWED_ORIGINS = get_env_variable("CORS_ALLOWED_ORIGINS", "").split(",")
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
