@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import NavBar from './components/Navbar/NavBarComponent'
-import DashBoard from './components/DashBoard/DashBoard'
+import DashBoard from './components/DashBoard/DashBoardComponent'
 import './App.css'
 import Profile from './components/Profile/Profile'
 import { Routes, Route, Navigate } from "react-router-dom"
